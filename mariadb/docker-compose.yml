@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  db:
+    image: mariadb
+    container_name: my-mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123123a@
+      MYSQL_ROOT_USERNAME: root
+    networks:
+      - my_net
+    ports:
+      - 3306:3306
+networks: 
+  my_net:
+
+  
