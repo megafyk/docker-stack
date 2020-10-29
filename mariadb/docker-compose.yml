@@ -2,16 +2,32 @@ version: '3.8'
 services:
   db:
     image: mariadb
-    container_name: my-mariadb
+    container_name: brm-mariadb
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: 123123a@
-      MYSQL_ROOT_USERNAME: root
+      - MYSQL_ROOT_PASSWORD=123123a@
+      - MYSQL_ROOT_USERNAME=root
+      - MYSQL_PASSWORD=123123a@
+      - MYSQL_USER=mydb
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max-allowed-packet=1073741824
+      - --wait_timeout=600
+      - --net_read_timeout=600
+      - --net_write_timeout=600
+      - --connect_timeout=60
+      - --lower_case_table_names=1
     networks:
-      - my_net
+      my_net_mariadb:
+        ipv4_address: 172.28.0.2
     ports:
       - 3306:3306
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
 networks: 
-  my_net:
-
-  
+  my_net_mariadb:
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

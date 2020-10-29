@@ -42,12 +42,23 @@ services:
       - MYSQL_ROOT_PASSWORD=123123a@
       - MYSQL_ROOT_USERNAME=root
       - MYSQL_PASSWORD=123123a@
-      - MYSQL_USER=stest
+      - MYSQL_USER=business_rule
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max-allowed-packet=1073741824
+      - --wait_timeout=600
+      - --net_read_timeout=600
+      - --net_write_timeout=600
+      - --connect_timeout=60
+      - --lower_case_table_names=1
     networks:
       my_net:
         ipv4_address: 172.28.0.4
     ports:
       - 3306:3306
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
     depends_on: 
       - business-central
 
