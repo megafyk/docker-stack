@@ -5,7 +5,6 @@ services:
   business-central:
     image: jboss/business-central-workbench-showcase
     container_name: business-central
-    restart: always
     ports:
     - 8080:8080
     - 8001:8001
@@ -37,7 +36,6 @@ services:
   db:
     image: mariadb
     container_name: brm-mariadb
-    restart: always
     environment:
       - MYSQL_ROOT_PASSWORD=123123a@
       - MYSQL_ROOT_USERNAME=root
