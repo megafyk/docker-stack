@@ -1,0 +1,37 @@
+version: "3"
+
+services: 
+  machine0:
+    image: my-alpine
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: machine0
+    networks:
+      my_net_hadoop:
+        ipv4_address: 172.20.0.10
+
+  machine1:
+    image: my-alpine
+    container_name: machine1
+    depends_on: 
+      - machine0
+    networks:
+      my_net_hadoop:
+        ipv4_address: 172.20.0.11
+
+  machine2:
+    image: my-alpine
+    container_name: machine2
+    depends_on: 
+      - machine0
+    networks:
+      my_net_hadoop:
+        ipv4_address: 172.20.0.12
+
+networks: 
+  my_net_hadoop:
+    ipam: 
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
