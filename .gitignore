@@ -2,3 +2,4 @@ drools/zk-single-kafka-single/
 .vscode
 drools/zk-single-kafka-multiple/
 myCA.crt
+hadoop-3.2.2

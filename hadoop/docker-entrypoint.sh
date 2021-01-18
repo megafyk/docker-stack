@@ -14,4 +14,6 @@ if [ ! -d "/var/run/sshd" ]; then
   mkdir -p /var/run/sshd
 fi
 
+cat /tmp/hosts >> /etc/hosts
+
 exec "$@"
