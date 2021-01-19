@@ -3,3 +3,4 @@ drools/zk-single-kafka-single/
 drools/zk-single-kafka-multiple/
 myCA.crt
 hadoop-3.2.2
+jdk1.8.0_271

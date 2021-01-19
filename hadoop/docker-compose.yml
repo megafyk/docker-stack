@@ -7,6 +7,10 @@ services:
       context: .
       dockerfile: ./Dockerfile
     container_name: machine0
+    ports: 
+      - 9870:9870
+      - 9000:9090
+      - 9868:9868
     networks:
       my_net_hadoop:
         ipv4_address: 172.20.0.10

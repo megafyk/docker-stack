@@ -1,48 +1,34 @@
-FROM alpine
+FROM centos
 
-RUN sed -i 's/https/http/' /etc/apk/repositories
-
-RUN apk add --no-cache bash
-
-RUN apk update && apk add ca-certificates \
-    && rm -rf /var/cache/apk/*
-COPY ./myCA.crt /usr/local/share/ca-certificates
-RUN update-ca-certificates
-# add alternatives packages and clean
-RUN apk add --update openssh \
-    && rm -rf /tmp/* /var/cache/apk/*
-#
-RUN apk add curl vim sudo openjdk8  \
-    && rm -rf /tmp/* /var/cache/apk/*
-# add entrypoint script
-ADD docker-entrypoint.sh /usr/local/bin
-#make sure we get fresh keys
-RUN rm -rf /etc/ssh/ssh_host_rsa_key /etc/ssh/ssh_host_dsa_key
-#exec entrypoint file
-RUN chmod 777 /usr/local/bin/docker-entrypoint.sh \
-    && ln -s /usr/local/bin/docker-entrypoint.sh
-#
-RUN addgroup hadoop && adduser -D -s /bin/bash -G hadoop hadoop && passwd -u hadoop
-#
-RUN echo "hadoop ALL=(ALL) ALL" >> /etc/sudoers
-#
-ADD hosts tmp/
-#
-WORKDIR /home/hadoop
-#
-ADD ./hadoop-3.2.2 /home/hadoop/hadoop
-#
-ADD ./etc /home/hadoop/hadoop/etc
-#
-RUN echo "export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/jre" >> /home/hadoop/hadoop/etc/hadoop/hadoop-env.sh
-#
-COPY ./.profile /home/hadoop/.profile
-#
-COPY ./.bashrc /home/hadoop/.bashrc
-#
-RUN chown -R hadoop:hadoop /home/hadoop
-#
 EXPOSE 22
-#
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["/usr/sbin/sshd","-D"]
+
+# This containers function is specifically to run/test ssh, ignore hints
+# about having openssh in a Dockerfile.
+# "WARNING: installing SSH in a container is not recommended.
+# Do you really need SSH in this image?"
+# dockerfile_lint - ignore
+RUN yum -y erase vim-minimal iputils libss && \
+    yum -y install sudo openssh openssh-server openssh-clients && \
+    yum -y clean all
+
+ENV container docker
+RUN (cd /lib/systemd/system/sysinit.target.wants/; for i in *; do [ $i == \
+systemd-tmpfiles-setup.service ] || rm -f $i; done); \
+rm -f /lib/systemd/system/multi-user.target.wants/*;\
+rm -f /etc/systemd/system/*.wants/*;\
+rm -f /lib/systemd/system/local-fs.target.wants/*; \
+rm -f /lib/systemd/system/sockets.target.wants/*udev*; \
+rm -f /lib/systemd/system/sockets.target.wants/*initctl*; \
+rm -f /lib/systemd/system/basic.target.wants/*;\
+rm -f /lib/systemd/system/anaconda.target.wants/*;
+VOLUME [ "/sys/fs/cgroup" ]
+CMD ["/usr/sbin/init"]
+
+RUN useradd -mU hadoop && (echo 'hadoop:0' | chpasswd)
+RUN echo "hadoop ALL=(ALL) ALL" >> /etc/sudoers
+WORKDIR /home/hadoop
+
+ADD hosts /tmp/
+ADD docker-entrypoint.sh /usr/local/bin
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT [ "docker-entrypoint.sh" ]
