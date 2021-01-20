@@ -11,6 +11,7 @@ services:
       - 9870:9870
       - 9000:9090
       - 9868:9868
+      - 8088:8088
     networks:
       my_net_hadoop:
         ipv4_address: 172.20.0.10

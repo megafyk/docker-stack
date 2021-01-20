@@ -4,3 +4,4 @@ drools/zk-single-kafka-multiple/
 myCA.crt
 hadoop-3.2.2
 jdk-8u281-linux-x64.rpm
+spark-3.0.1-bin-hadoop3.2
